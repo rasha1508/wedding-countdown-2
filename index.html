@@ -3,13 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wedding Countdown Widget</title>
+    <title>Wedding Countdown with Date & Time</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Dancing+Script:wght@500&display=swap"
       rel="stylesheet"
     />
     <style>
-      /* Ensure the body takes full width */
       body {
         font-family: "Playfair Display", serif;
         background-color: transparent;
@@ -20,33 +19,31 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        width: 100%; /* Full width */
+        width: 100%;
         box-sizing: border-box;
       }
 
-      /* Main container takes full width but has a max size */
       .countdown-container {
         text-align: center;
         background-color: #fffaf2;
         padding: 20px;
         border-radius: 15px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        width: 100%; /* Full width of the Notion page */
-        max-width: 800px; /* Optional: Limit max width */
+        width: 100%;
+        max-width: 800px;
         margin: 10px;
       }
 
       h1 {
         font-family: "Dancing Script", cursive;
         font-size: 2em;
-        font-weight: 500;
         color: #8c6954;
         margin-bottom: 15px;
       }
 
       #timer {
         font-size: 1.2em;
-        font-weight: 400;
+        font-family: "Playfair Display", serif;
         color: #8c6954;
         margin-top: 15px;
       }
@@ -55,10 +52,9 @@
         margin-top: 15px;
       }
 
-      input[type="date"] {
+      input {
         font-size: 1.1em;
         padding: 8px;
-        width: 90%;
         border: 1px solid #a67b5b;
         border-radius: 5px;
         color: #a67b5b;
@@ -93,22 +89,24 @@
       <h1>Wedding Day</h1>
       <div id="date-input">
         <input type="date" id="target-date" />
+        <input type="time" id="target-time" />
         <button id="start-button">Start Countdown</button>
       </div>
-      <div id="timer">Select a date to begin the countdown.</div>
+      <div id="timer">Select the date and time to begin the countdown.</div>
     </div>
 
     <script>
       const dateInputContainer = document.getElementById("date-input");
       const targetDateInput = document.getElementById("target-date");
+      const targetTimeInput = document.getElementById("target-time");
       const startButton = document.getElementById("start-button");
       const timer = document.getElementById("timer");
 
       let interval;
 
-      function updateTimer(targetDate) {
+      function updateTimer(targetDateTime) {
         const now = new Date().getTime();
-        const distance = targetDate - now;
+        const distance = targetDateTime - now;
 
         if (distance <= 0) {
           timer.innerHTML = `<span class="highlight">It's time!</span>`;
@@ -127,48 +125,27 @@
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
         timer.innerHTML = `
-        <span class="highlight">${weeks}w</span> 
-        <span class="highlight">${days}d</span> 
-        <span class="highlight">${hours}h</span> 
-        <span class="highlight">${minutes}m</span> 
-        <span class="highlight">${seconds}s</span> to go
-      `;
+          <div>${weeks} weeks ${days} days ${hours} hours ${minutes} minutes ${seconds} seconds left!</div>
+        `;
       }
 
-      function startCountdown() {
-        const targetDateValue = targetDateInput.value;
-        if (!targetDateValue) {
-          timer.innerHTML = "Please select a valid date!";
+      startButton.addEventListener("click", () => {
+        const selectedDate = targetDateInput.value;
+        const selectedTime = targetTimeInput.value;
+
+        if (!selectedDate || !selectedTime) {
+          timer.innerHTML = `<span class="highlight">Please select both a date and time.</span>`;
           return;
         }
 
-        const targetDate = new Date(targetDateValue).getTime();
+        const targetDateTime = new Date(
+          `${selectedDate}T${selectedTime}`
+        ).getTime();
 
-        // Save the date to localStorage
-        localStorage.setItem("weddingCountdownDate", targetDateValue);
-
-        // Hide the date input and button
-        dateInputContainer.style.display = "none";
-
-        // Clear any existing interval
         clearInterval(interval);
-
-        // Update timer immediately and every second
-        updateTimer(targetDate);
-        interval = setInterval(() => updateTimer(targetDate), 1000);
-      }
-
-      // Check if a date is already saved in localStorage
-      const savedDate = localStorage.getItem("weddingCountdownDate");
-      if (savedDate) {
-        dateInputContainer.style.display = "none";
-        const targetDate = new Date(savedDate).getTime();
-        updateTimer(targetDate);
-        interval = setInterval(() => updateTimer(targetDate), 1000);
-      }
-
-      // Add event listener to the button
-      startButton.addEventListener("click", startCountdown);
+        updateTimer(targetDateTime);
+        interval = setInterval(() => updateTimer(targetDateTime), 1000);
+      });
     </script>
   </body>
 </html>

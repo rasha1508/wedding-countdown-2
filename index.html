@@ -34,7 +34,12 @@
         width: 100%;
         max-width: 800px; /* Limit width for larger screens */
         margin: 10px;
+        overflow-y: scroll; /* allow scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; 
       }
+      .your-gadget-container::-webkit-scrollbar {
+  display: none;
 
       h1 {
         font-family: "Dancing Script", cursive;

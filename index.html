@@ -3,228 +3,192 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wedding Countdown Timer</title>
+    <title>Wedding Countdown with Date & Time</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Dancing+Script:wght@500&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      /* Full-width responsive design */
       body {
-        font-family: "Times New Roman", serif;
-        padding: 20px;
+        font-family: "Playfair Display", serif;
+        background-color: transparent;
+        color: #a67b5b;
+        margin: 0;
+        padding: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
-        margin: 0;
-        background: #fff0f5;
+        width: 100%;
+        box-sizing: border-box;
       }
 
-      .countdown-widget {
-        width: 700px;
-        background-color: #f2d7d7;
-        padding: 25px;
-        border-radius: 15px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      /* Main widget container */
+      .countdown-container {
         text-align: center;
-        border: 2px solid #ac757e;
+        background-color: #fffaf2;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px; /* Limit width for larger screens */
+        margin: 10px;
+        overflow-y: scroll; /* allow scrolling */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;
+      }
+      .countdown-container::-webkit-scrollbar {
+        display: none;
+      }
+      h1 {
+        font-family: "Dancing Script", cursive;
+        font-size: 2em;
+        font-weight: 500;
+        color: #8c6954;
+        margin-bottom: 15px;
       }
 
-      h1 {
-        font-size: 2.2em;
-        color: #ac757e;
-        margin-bottom: 20px;
+      #timer {
+        font-size: 1.2em;
+        font-weight: 400;
+        color: #8c6954;
+        margin-top: 15px;
+      }
+
+      #date-input {
+        margin-top: 15px;
+      }
+
+      input {
+        font-size: 1.1em;
+        padding: 8px;
+        border: 1px solid #a67b5b;
+        border-radius: 5px;
+        color: #a67b5b;
+        background-color: #fbf8f4;
+        margin-bottom: 15px;
+      }
+
+      input[type="time"] {
+        width: 100px;
       }
 
       input[type="date"] {
-        font-family: "Times New Roman", serif;
-        padding: 8px;
-        border: 2px solid #ac757e;
-        background-color: #fffaf0;
-        border-radius: 8px;
-        margin-bottom: 15px;
         width: 90%;
-        font-size: 0.9em;
       }
 
       button {
-        font-family: "Times New Roman", serif;
-        padding: 10px 20px;
-        color: #fffaf0;
-        background-color: #ac757e;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        box-shadow: 2px 2px 2px black;
+        font-family: "Playfair Display", serif;
         font-size: 1em;
-        margin-bottom: 10px;
-        transition: all 0.3s ease;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #a67b5b;
+        color: white;
+        cursor: pointer;
       }
 
       button:hover {
-        background-color: #fffaf0;
-        color: #ac757e;
+        opacity: 0.9;
       }
 
-      #change-date {
-        display: none;
-        background-color: transparent;
-        color: #ac757e;
-        border: 1px dashed #ac757e;
-        font-size: 0.8em;
-        cursor: pointer;
-        margin-top: 10px;
-        transition: all 0.3s ease;
-      }
-
-      #change-date:hover {
-        color: #fffaf0;
-        background-color: #ac757e;
-        border: 1px solid #ac757e;
-      }
-
-      .countdown-result {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 20px;
-        flex-wrap: wrap;
-        font-size: 1.5em;
-      }
-
-      .time-box {
-        background: #fffaf0;
-        color: #ac757e;
-        padding: 15px 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        min-width: 100px;
-        transition: all 0.5s ease;
-      }
-
-      .label {
-        display: block;
-        font-size: 0.7em;
-        color: #ac757e;
-        margin-top: 5px;
-      }
-
-      /* Animate numbers */
-      .number {
-        display: inline-block;
-        transition: transform 0.5s ease;
+      .highlight {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #8c6954;
       }
     </style>
   </head>
-
   <body>
-    <div class="countdown-widget">
-      <h1>Wedding Countdown</h1>
-      <input type="date" id="date-input" />
-      <button id="start-countdown">Start Countdown</button>
-      <div class="countdown-result" id="countdown"></div>
-      <button id="change-date">Change Date</button>
+    <div class="countdown-container">
+      <h1>Wedding Day</h1>
+      <div id="date-input">
+        <input type="date" id="target-date" />
+        <input type="time" id="target-time" />
+        <button id="start-button">Start Countdown</button>
+      </div>
+      <div id="timer">Select the date and time to begin the countdown.</div>
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const dateInput = document.getElementById("date-input");
-        const countdownResult = document.getElementById("countdown");
-        const startBtn = document.getElementById("start-countdown");
-        const changeBtn = document.getElementById("change-date");
-        let updateCountdown;
+      const dateInputContainer = document.getElementById("date-input");
+      const targetDateInput = document.getElementById("target-date");
+      const targetTimeInput = document.getElementById("target-time");
+      const startButton = document.getElementById("start-button");
+      const timer = document.getElementById("timer");
 
-        const savedDate = localStorage.getItem("weddingDate");
+      let interval;
 
-        if (savedDate) {
-          dateInput.value = savedDate;
-          startCountdown();
-          hideInputAndButton();
+      function updateTimer(targetDateTime) {
+        const now = new Date().getTime();
+        const distance = targetDateTime - now;
+
+        if (distance <= 0) {
+          timer.innerHTML = `<span class="highlight">It's time!</span>`;
+          clearInterval(interval);
+          return;
         }
 
-        startBtn.addEventListener("click", function () {
-          const enteredDate = dateInput.value;
-          if (!enteredDate) {
-            alert("Please select a valid date.");
-            return;
-          }
+        const weeks = Math.floor(distance / (1000 * 60 * 60 * 24 * 7));
+        const days = Math.floor(
+          (distance % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60 * 24)
+        );
+        const hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-          localStorage.setItem("weddingDate", enteredDate);
-          startCountdown();
-          hideInputAndButton();
-        });
+        timer.innerHTML = `
+        <span class="highlight">${weeks}w</span> 
+        <span class="highlight">${days}d</span> 
+        <span class="highlight">${hours}h</span> 
+        <span class="highlight">${minutes}m</span> 
+        <span class="highlight">${seconds}s</span> to go
+      `;
+      }
 
-        changeBtn.addEventListener("click", function () {
-          dateInput.style.display = "block";
-          startBtn.style.display = "inline-block";
-          changeBtn.style.display = "none";
-          countdownResult.innerHTML = "";
-          clearInterval(updateCountdown);
-        });
-
-        function hideInputAndButton() {
-          dateInput.style.display = "none";
-          startBtn.style.display = "none";
-          changeBtn.style.display = "inline-block";
+      function startCountdown() {
+        const targetDateValue = targetDateInput.value;
+        const targetTimeValue = targetTimeInput.value;
+        if (!targetDateValue || !targetTimeValue) {
+          timer.innerHTML = "Please select a valid date and time!";
+          return;
         }
 
-        function startCountdown() {
-          if (updateCountdown) clearInterval(updateCountdown);
+        const [hours, minutes] = targetTimeValue.split(":");
+        const targetDateTime = new Date(targetDateValue);
+        targetDateTime.setHours(hours, minutes);
 
-          const weddingDate = new Date(dateInput.value).setHours(0, 0, 0, 0);
-          const now = new Date().setHours(0, 0, 0, 0);
+        // Save the date and time to localStorage
+        localStorage.setItem("weddingCountdownDateTime", targetDateTime);
 
-          if (weddingDate <= now) {
-            countdownResult.innerHTML = "The wedding date has already passed!";
-            countdownResult.style.display = "flex";
-            return;
-          }
+        // Hide the date input and button
+        dateInputContainer.style.display = "none";
 
-          updateCountdown = setInterval(function () {
-            const currentTime = new Date().getTime();
-            const timeDifference = weddingDate - currentTime;
+        // Clear any existing interval
+        clearInterval(interval);
 
-            if (timeDifference <= 0) {
-              clearInterval(updateCountdown);
-              countdownResult.innerHTML =
-                '<div class="time-box">🎉 Today is your wedding! 🎉</div>';
-              countdownResult.style.display = "flex";
-              return;
-            }
+        // Update timer immediately and every second
+        updateTimer(targetDateTime.getTime());
+        interval = setInterval(
+          () => updateTimer(targetDateTime.getTime()),
+          1000
+        );
+      }
 
-            const months = Math.floor(
-              timeDifference / (1000 * 60 * 60 * 24 * 30)
-            );
-            const days = Math.floor(
-              (timeDifference % (1000 * 60 * 60 * 24 * 30)) /
-                (1000 * 60 * 60 * 24)
-            );
-            const hours = Math.floor(
-              (timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-            );
-            const minutes = Math.floor(
-              (timeDifference % (1000 * 60 * 60)) / (1000 * 60)
-            );
-            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+      // Check if a date-time is already saved in localStorage
+      const savedDateTime = localStorage.getItem("weddingCountdownDateTime");
+      if (savedDateTime) {
+        dateInputContainer.style.display = "none";
+        const targetDateTime = new Date(savedDateTime).getTime();
+        updateTimer(targetDateTime);
+        interval = setInterval(() => updateTimer(targetDateTime), 1000);
+      }
 
-            // Update countdown with animation
-            countdownResult.innerHTML = `
-              <div class="time-box"><span class="number">${months}</span><span class="label">Months</span></div>
-              <div class="time-box"><span class="number">${days}</span><span class="label">Days</span></div>
-              <div class="time-box"><span class="number">${hours}</span><span class="label">Hours</span></div>
-              <div class="time-box"><span class="number">${minutes}</span><span class="label">Minutes</span></div>
-              <div class="time-box"><span class="number">${seconds}</span><span class="label">Seconds</span></div>
-            `;
-
-            // Add subtle pop animation
-            const numbers = countdownResult.querySelectorAll(".number");
-            numbers.forEach((num) => {
-              num.style.transform = "scale(1.2)";
-              setTimeout(() => (num.style.transform = "scale(1)"), 300);
-            });
-
-            countdownResult.style.display = "flex";
-          }, 1000);
-        }
-      });
+      // Add event listener to the button
+      startButton.addEventListener("click", startCountdown);
     </script>
   </body>
 </html>
-
-
